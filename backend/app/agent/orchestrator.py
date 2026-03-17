@@ -4,7 +4,7 @@ Coordinates the full autonomous cycle: Plan -> Code -> Deploy -> Market
 """
 import os
 import json
-from datetime import datetime, timezone
+from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.company import Company, CompanyStatus, AgentLog, AgentTask
@@ -96,7 +96,7 @@ async def run_full_cycle(company: Company, db: AsyncSession, phases: list = None
                     json.dumps(marketing_result))
 
     # Update cycle timestamp
-    company.last_cycle_at = datetime.now(timezone.utc)
+    company.last_cycle_at = datetime.utcnow()
     await db.flush()
 
     return results

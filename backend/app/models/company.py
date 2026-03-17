@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from sqlalchemy import Column, Integer, String, Text, DateTime, Float, ForeignKey, Enum as SQLEnum
 from sqlalchemy.orm import relationship
 import enum
@@ -33,8 +33,8 @@ class Company(Base):
     monthly_visitors = Column(Integer, default=0)
     repo_path = Column(String, nullable=True)
     last_cycle_at = Column(DateTime, nullable=True)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     owner = relationship("User", back_populates="companies")
     agent_logs = relationship("AgentLog", back_populates="company")
@@ -47,10 +47,10 @@ class AgentLog(Base):
     id = Column(Integer, primary_key=True, index=True)
     company_id = Column(Integer, ForeignKey("companies.id"), nullable=False)
     cycle_number = Column(Integer, default=1)
-    phase = Column(String, nullable=False)  # plan, code, deploy, market, ops
+    phase = Column(String, nullable=False)
     message = Column(Text, nullable=False)
-    details = Column(Text, nullable=True)  # JSON string of detailed actions
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    details = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
     company = relationship("Company", back_populates="agent_logs")
 
@@ -60,12 +60,12 @@ class AgentTask(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     company_id = Column(Integer, ForeignKey("companies.id"), nullable=False)
-    task_type = Column(String, nullable=False)  # engineering, marketing, ops, support
+    task_type = Column(String, nullable=False)
     title = Column(String, nullable=False)
     description = Column(Text, nullable=True)
-    status = Column(String, default="pending")  # pending, running, completed, failed
+    status = Column(String, default="pending")
     result = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=datetime.utcnow)
     completed_at = Column(DateTime, nullable=True)
 
     company = relationship("Company", back_populates="tasks")
